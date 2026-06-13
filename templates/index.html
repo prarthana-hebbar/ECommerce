@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Inventory Dashboard | Crimson Edition</title>
+    <style>
+        :root {
+            --bg-deep: #0a0408;
+            --bg-surface: #1a0b12;
+            --bg-field: #2d141f;
+            --text-pure: #ffffff;
+            --text-bright: #fce4ec;
+            --text-dim: #e9a2b3;
+            --neon-red: #ff1744;
+            --crimson-glow: #ff2a4d;
+            --deep-red: #d50000;
+            --blood-red: #8b0000;
+            --rose-gold: #ff6b6b;
+            --border-glow: #4a1a2a;
+            --border-active: #ff1744;
+            --gradient-primary: linear-gradient(135deg, #ff1744 0%, #d50000 100%);
+            --gradient-dark: linear-gradient(135deg, #1a0b12 0%, #0a0408 100%);
+            --gradient-card: linear-gradient(135deg, rgba(45, 20, 31, 0.95) 0%, rgba(26, 11, 18, 0.95) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--gradient-dark);
+            color: var(--text-bright);
+            padding: 30px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 23, 68, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(213, 0, 0, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(255, 23, 68, 0.3);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 23, 68, 0.3)); }
+            50% { filter: drop-shadow(0 0 20px rgba(255, 23, 68, 0.6)); }
+        }
+
+        .subtitle {
+            color: var(--rose-gold);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 480px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .controls-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--gradient-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 23, 68, 0.2);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 23, 68, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(255, 23, 68, 0.15), 0 0 0 1px rgba(255, 23, 68, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--neon-red);
+            padding-left: 15px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--rose-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1.5px solid rgba(255, 23, 68, 0.3);
+            border-radius: 12px;
+            color: var(--text-pure);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 23, 68, 0.3);
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.02);
+        }
+
+        input::placeholder {
+            color: rgba(233, 162, 179, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--gradient-primary);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 23, 68, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.btn-outline {
+            background: transparent;
+            color: var(--neon-red);
+            border: 2px solid var(--neon-red);
+        }
+
+        button.btn-outline:hover {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        button.btn-danger {
+            background: transparent;
+            color: var(--deep-red);
+            border: 2px solid var(--deep-red);
+        }
+
+        button.btn-danger:hover {
+            background: var(--deep-red);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(213, 0, 0, 0.4);
+        }
+
+        .btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+            margin: 25px 0;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .action-bar {
+            background: var(--gradient-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 23, 68, 0.2);
+            border-radius: 20px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-bar h2 {
+            font-size: 1.2rem;
+            color: var(--rose-gold);
+            letter-spacing: 1px;
+        }
+
+        .action-bar button {
+            width: auto;
+            padding: 10px 30px;
+        }
+
+        .output-canvas {
+            min-height: 500px;
+            background: var(--gradient-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 23, 68, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card {
+            background: linear-gradient(135deg, rgba(45, 20, 31, 0.9) 0%, rgba(26, 11, 18, 0.9) 100%);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 23, 68, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .product-card:hover::before {
+            left: 100%;
+        }
+
+        .product-card:hover {
+            border-color: var(--neon-red);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(255, 23, 68, 0.2);
+        }
+
+        .product-card .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 23, 68, 0.2);
+            color: var(--neon-red);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            backdrop-filter: blur(5px);
+        }
+
+        .product-card h3 {
+            font-size: 1.2rem;
+            color: var(--text-pure);
+            margin-bottom: 8px;
+            padding-right: 50px;
+            font-weight: 600;
+        }
+
+        .product-card .price-tag {
+            font-size: 1.3rem;
+            color: var(--neon-red);
+            font-weight: 800;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .product-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 23, 68, 0.2);
+            padding-top: 12px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        .product-card .stat-row span:first-child {
+            color: var(--rose-gold);
+        }
+
+        .invoice-box {
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 23, 68, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .invoice-row:last-child {
+            border-bottom: none;
+            background: linear-gradient(135deg, rgba(255, 23, 68, 0.1), rgba(213, 0, 0, 0.05));
+        }
+
+        .invoice-row strong {
+            color: var(--neon-red);
+        }
+
+        .status-block {
+            padding: 20px;
+            border-radius: 16px;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--neon-red);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .status-block.error-state {
+            border-left-color: var(--deep-red);
+            background: rgba(213, 0, 0, 0.1);
+        }
+
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--gradient-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            border-left: 4px solid var(--neon-red);
+            color: var(--text-pure);
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            font-weight: 500;
+            min-width: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .toast.error {
+            border-left-color: var(--deep-red);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-red);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--deep-red);
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+
+<div class="dashboard-container">
+    <header>
+        <h1>⚡ E-COMMERCE SYSTEM</h1>
+        <div class="subtitle">CRIMSON EDITION • INVENTORY MANAGEMENT SUITE</div>
+    </header>
+
+    <div class="grid-layout">
+        <div class="controls-column">
+            
+            <div class="card">
+                <h2>📦 Product Operations</h2>
+                <div class="form-group">
+                    <label>🔑 Product ID</label>
+                    <input type="number" id="prodId" placeholder="e.g., 204">
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Product Name</label>
+                    <input type="text" id="prodName" placeholder="e.g., Premium Headphones">
+                </div>
+                <div class="form-group">
+                    <label>💰 Price (₹)</label>
+                    <input type="number" id="prodPrice" placeholder="e.g., 2999">
+                </div>
+                <div class="form-group">
+                    <label>📊 Stock Available</label>
+                    <input type="number" id="prodStock" placeholder="e.g., 50">
+                </div>
+                <div class="form-group">
+                    <label>📁 Category ID</label>
+                    <input type="number" id="prodCat" placeholder="e.g., 101">
+                </div>
+                <button onclick="insertProduct()">✨ Insert New Product</button>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label>🎯 Target Product ID</label>
+                    <input type="number" id="updateId" placeholder="Enter Product ID to modify">
+                </div>
+                <div class="form-group">
+                    <label>💲 New Price</label>
+                    <input type="number" id="updatePrice" placeholder="e.g., 24999">
+                </div>
+                <div class="btn-stack">
+                    <button class="btn-outline" onclick="updateProduct()">✏️ Update Price</button>
+                    <button class="btn-danger" onclick="deleteProduct()">🗑️ Delete Product</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ System Procedures</h2>
+                <div class="form-group">
+                    <label>📄 Order ID</label>
+                    <input type="number" id="spId" placeholder="Enter Order ID for invoice">
+                </div>
+                <button class="btn-outline" onclick="generateInvoice()">📑 Generate Invoice (SP)</button>
+
+                <div class="divider"></div>
+
+                <h2>🔄 Database Triggers</h2>
+                <div class="form-group">
+                    <label>🔢 Order Detail ID</label>
+                    <input type="number" id="triggerDetailId" placeholder="e.g., 403">
+                </div>
+                <div class="form-group">
+                    <label>📋 Associated Order ID</label>
+                    <input type="number" id="triggerOrderId" placeholder="e.g., 301">
+                </div>
+                <div class="form-group">
+                    <label>🎯 Product ID</label>
+                    <input type="number" id="triggerProdId" placeholder="e.g., 201">
+                </div>
+                <div class="form-group">
+                    <label>🛒 Purchase Quantity</label>
+                    <input type="number" id="triggerQty" placeholder="Test limits with >50">
+                </div>
+                <div class="form-group">
+                    <label>💵 Price Override</label>
+                    <input type="number" id="triggerPrice" placeholder="e.g., 54999">
+                </div>
+                <button class="btn-outline" onclick="simulateTransaction()">🚀 Execute Transaction</button>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="action-bar">
+                <h2>🎨 Live Dashboard Canvas</h2>
+                <button onclick="displayProducts()">🔄 Refresh Products</button>
+            </div>
+
+            <div class="output-canvas" id="canvasView">
+                <div style="text-align: center; color: var(--rose-gold); padding-top: 180px; opacity: 0.7;">
+                    ✨ Ready for Action ✨<br><br>
+                    Click "Refresh Products" or perform any operation to see live data
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvasView');
+
+    function showToast(message, isError = false) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : ''}`;
+        toast.innerHTML = `
+            <span>${isError ? '⚠️ ' : '✅ '}${message}</span>
+            <span style="margin-left: 20px; cursor: pointer; opacity: 0.7; font-size: 1.2rem;" onclick="this.parentElement.remove()">✕</span>
+        `;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 3000);
+    }
+
+    function showStatus(text, isError = false) {
+        canvas.innerHTML = `
+            <div class="status-block ${isError ? 'error-state' : ''}">
+                <h4 style="color: ${isError ? 'var(--deep-red)' : 'var(--neon-red)'}; margin-bottom: 12px; font-size: 1.1rem;">
+                    ${isError ? '⚠️ TRANSACTION ERROR' : '✅ SUCCESS'}
+                </h4>
+                <p style="color: var(--text-bright); line-height: 1.6;">${text}</p>
+            </div>
+        `;
+    }
+
+    function renderGrid(records) {
+        if (!Array.isArray(records) || records.length === 0) {
+            canvas.innerHTML = `<div style="color: var(--rose-gold); text-align: center; padding: 50px;">📭 No products found in inventory</div>`;
+            return;
+        }
+        let cardsHtml = '';
+        records.forEach(item => {
+            cardsHtml += `
+                <div class="product-card">
+                    <div class="badge">ID: ${item.product_id}</div>
+                    <h3>${escapeHtml(item.name)}</h3>
+                    <div class="price-tag">₹${parseFloat(item.price).toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
+                    <div class="stat-row"><span>📦 Stock</span><span style="color:var(--neon-red); font-weight:700;">${item.stock} units</span></div>
+                    <div class="stat-row"><span>📂 Category</span><span>${item.category_id || 'N/A'}</span></div>
+                </div>
+            `;
+        });
+        canvas.innerHTML = `<div class="grid-view">${cardsHtml}</div>`;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderInvoice(data) {
+        if(!Array.isArray(data) || data.length === 0) {
+            showStatus("No invoice found for the provided Order ID", true);
+            showToast("Invoice lookup failed", true);
+            return;
+        }
+        const inv = data[0];
+        canvas.innerHTML = `
+            <div style="max-width: 650px; margin: 0 auto;">
+                <h3 style="color: var(--neon-red); margin-bottom: 20px; text-transform: uppercase; text-align: center;">📄 Invoice Statement</h3>
+                <div class="invoice-box">
+                    <div class="invoice-row"><span>🧾 Invoice ID</span><strong>#${inv.order_id}</strong></div>
+                    <div class="invoice-row"><span>📅 Date</span><span>${inv.order_date}</span></div>
+                    <div class="invoice-row"><span>👤 Customer</span><span>${escapeHtml(inv.customer_name)} (${inv.email})</span></div>
+                    <div class="invoice-row"><span>🛍️ Product</span><span>${escapeHtml(inv.product_name)} × ${inv.quantity}</span></div>
+                    <div class="invoice-row"><span>💵 Unit Price</span><span>₹${inv.price}</span></div>
+                    <div class="invoice-row"><strong>💰 Total Amount</strong><strong style="color: var(--neon-red); font-size: 1.3rem;">₹${inv.total_amount}</strong></div>
+                </div>
+            </div>
+        `;
+    }
+
+    /* API Calls */
+    async function displayProducts() {
+        try {
+            const res = await fetch('/api/products');
+            if (!res.ok) throw new Error('Network response failed');
+            renderGrid(await res.json());
+            showToast("Products loaded successfully");
+        } catch(e) {
+            showStatus("Failed to connect to database. Check server connection.", true);
+            showToast("Connection error", true);
+        }
+    }
+
+    async function insertProduct() {
+        const id = document.getElementById('prodId').value;
+        const name = document.getElementById('prodName').value;
+        const price = document.getElementById('prodPrice').value;
+        const stock = document.getElementById('prodStock').value;
+        const cat = document.getElementById('prodCat').value;
+        if(!id || !name || !price || !stock) { 
+            showToast("Please fill all required fields", true);
+            return; 
+        }
+
+        try {
+            const res = await fetch('/api/products', {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: parseInt(id), name, price: parseFloat(price), stock: parseInt(stock), category_id: cat || null })
+            });
+            const out = await res.json();
+            showStatus(out.message);
+            showToast(out.message);
+            setTimeout(displayProducts, 800);
+            // Clear form
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodStock').value = '';
+            document.getElementById('prodCat').value = '';
+        } catch(e) {
+            showToast("Failed to insert product", true);
+        }
+    }
+
+    async function updateProduct() {
+        const id = document.getElementById('updateId').value;
+        const price = document.getElementById('updatePrice').value;
+        if(!id || !price) { 
+            showToast("Product ID and new price required", true);
+            return; 
+        }
+
+        try {
+            const res = await fetch(`/api/products/${id}`, {
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ price: parseFloat(price) })
+            });
+            const out = await res.json();
+            showStatus(out.message);
+            showToast(out.message);
+            setTimeout(displayProducts, 800);
+            document.getElementById('updateId').value = '';
+            document.getElementById('updatePrice').value = '';
+        } catch(e) {
+            showToast("Update failed", true);
+        }
+    }
+
+    async function deleteProduct() {
+        const id = document.getElementById('updateId').value;
+        if(!id) { 
+            showToast("Product ID required for deletion", true);
+            return; 
+        }
+        if(!confirm("⚠️ Are you sure you want to delete this product? This action cannot be undone!")) return;
+
+        try {
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            const out = await res.json();
+            showStatus(out.message);
+            showToast(out.message);
+            setTimeout(displayProducts, 800);
+            document.getElementById('updateId').value = '';
+        } catch(e) {
+            showToast("Deletion failed", true);
+        }
+    }
+
+    async function generateInvoice() {
+        const id = document.getElementById('spId').value;
+        if(!id) { 
+            showToast("Order ID required", true);
+            return; 
+        }
+        try {
+            const res = await fetch(`/api/invoice/${id}`);
+            if (!res.ok) throw new Error('Invoice not found');
+            renderInvoice(await res.json());
+            showToast("Invoice generated successfully");
+        } catch(e) {
+            showStatus("Failed to generate invoice. Order ID may not exist.", true);
+            showToast("Invoice generation failed", true);
+        }
+    }
+
+    async function simulateTransaction() {
+        const dId = document.getElementById('triggerDetailId').value;
+        const oId = document.getElementById('triggerOrderId').value;
+        const pId = document.getElementById('triggerProdId').value;
+        const qty = document.getElementById('triggerQty').value;
+        const price = document.getElementById('triggerPrice').value;
+        if(!dId || !oId || !pId || !qty || !price) { 
+            showToast("All trigger fields are required", true);
+            return; 
+        }
+
+        try {
+            const res = await fetch('/api/order-detail', {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    order_detail_id: parseInt(dId), 
+                    order_id: parseInt(oId), 
+                    product_id: parseInt(pId), 
+                    quantity: parseInt(qty), 
+                    price: parseFloat(price) 
+                })
+            });
+            const out = await res.json();
+            const isError = out.message.includes("Intercepted") || out.message.includes("Error");
+            showStatus(out.message, isError);
+            showToast(out.message, isError);
+            
+            // Clear trigger form
+            document.getElementById('triggerDetailId').value = '';
+            document.getElementById('triggerOrderId').value = '';
+            document.getElementById('triggerProdId').value = '';
+            document.getElementById('triggerQty').value = '';
+            document.getElementById('triggerPrice').value = '';
+        } catch(e) {
+            showToast("Transaction failed", true);
+        }
+    }
+</script>
+</body>
+</html>
